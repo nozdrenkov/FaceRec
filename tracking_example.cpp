@@ -31,6 +31,9 @@ void drawVec(Mat &img, const Point2f &p1, const Point2f &p2, const Scalar &color
     line(img, p2, p2, color, 3);
 }
 
+int circle_radius = 0;
+
+
 Mat mask, selection_image;
 vector<Point2f> selected_corners;
 
@@ -41,7 +44,7 @@ void onMouse(int event, int x, int y, int flags, void *param)
         case CV_EVENT_MOUSEMOVE:
         {
             if ( flags == 1 )
-                cv::circle(mask, Point(x,y), 20, Scalar(1), -1);
+                cv::circle(mask, Point(x,y), circle_radius, Scalar(1), -1);
             break;
         }
         case CV_EVENT_LBUTTONUP:
@@ -95,6 +98,8 @@ int main()
     VideoCapture cap(path);
 
     namedWindow("detector");
+
+    createTrackbar("Radius", "detector", &circle_radius, 200);
 
     Mat prev_frame;
     vector<Point2f> prev_corners;
