@@ -18,5 +18,8 @@
     <ClCompile Include="tracking_example.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="face_detection_example.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
