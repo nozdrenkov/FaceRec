@@ -31,11 +31,70 @@ void drawVec(Mat &img, const Point2f &p1, const Point2f &p2, const Scalar &color
     line(img, p2, p2, color, 3);
 }
 
+Mat mask, selection_image;
+vector<Point2f> selected_corners;
+
+void onMouse(int event, int x, int y, int flags, void *param)
+{
+    switch(event)
+    {
+        case CV_EVENT_MOUSEMOVE:
+        {
+            if ( flags == 1 )
+                cv::circle(mask, Point(x,y), 20, Scalar(1), -1);
+            break;
+        }
+        case CV_EVENT_LBUTTONUP:
+        {
+            goodFeaturesToTrack(selection_image, selected_corners, 50, 0.01, 0.1, mask, 3, false);
+            break;
+        }
+    }
+}
+
+vector<Point2f> getCorners(const Mat &img, const Mat &gray_img)
+{
+    cout << "Getting corners..." << endl;
+    mask.create(img.size(), CV_8UC1);
+    mask.setTo(0);
+
+    selection_image = gray_img;
+    selected_corners.clear();
+
+    setMouseCallback("detector", onMouse, nullptr);
+
+    while (true)
+    {
+        Mat masked_image = img * 0.5;
+        img.copyTo(masked_image, mask);
+
+
+        for (size_t i = 0; i < selected_corners.size(); ++i)
+            drawPt(masked_image, selected_corners[i], CV_RGB(0, 255, 0));
+
+
+        imshow("detector", masked_image);
+
+        char c = waitKey(1);
+        if (c == ' ')
+            break;
+        if (c == 27)
+            exit(0);
+    }
+
+    setMouseCallback("detector", nullptr, nullptr);
+
+    cout << "Corners is ready!" << endl;
+    return selected_corners;
+}
+
 int main()
 {
     const string path = "C:\\v1.mp4";
 
     VideoCapture cap(path);
+
+    namedWindow("detector");
 
     Mat prev_frame;
     vector<Point2f> prev_corners;
@@ -53,7 +112,7 @@ int main()
         if (!prev_frame.empty())
         {
             if (prev_corners.empty())
-                goodFeaturesToTrack(prev_frame, prev_corners, 500, 0.01, 0.1, noArray(), 3, false);
+                prev_corners = getCorners(frame, cur_frame);
 
 
             vector<unsigned char> status;
