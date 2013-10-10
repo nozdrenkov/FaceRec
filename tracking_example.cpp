@@ -1,4 +1,4 @@
-#if 0
+#if 1
 
 #include <iostream>
 #include <string>
@@ -93,7 +93,7 @@ vector<Point2f> getCorners(const Mat &img, const Mat &gray_img)
 
 int main()
 {
-    const string path = "C:\\v1.mp4";
+    const string path = "C:\\v2.avi";
 
     VideoCapture cap(path);
 
@@ -108,7 +108,7 @@ int main()
     while (cap.grab())
     {
         cap.retrieve(frame);
-        resize(frame, frame, Size(), 0.5, 0.5);
+        resize(frame, frame, Size(), 0.8, 0.8);
 
 
         Mat cur_frame;

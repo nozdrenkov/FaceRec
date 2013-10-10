@@ -1,4 +1,5 @@
 #if 1
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -20,7 +21,6 @@ void drawPoint(Mat &img, const Point &pt, const Scalar &color)
 
 void drawRectangle(Mat &img, const Rect &tr, const Scalar &color)
 {
-    // putText(img, "Text", Point(tr.x, tr.y - 5), FONT_HERSHEY_COMPLEX_SMALL, 0.8, CV_RGB(0, 255, 0));
     Rect r = tr;
     rectangle(img, r, color, 1);
     Point center(r.x + r.width / 2, r.y + r.height / 2);
@@ -47,8 +47,15 @@ int main()
     setlocale(LC_ALL, "rus");
 
     namedWindow("detector", CV_WINDOW_AUTOSIZE);
-    const string path = "C:\\v1.mp4";
+    const string path = "C:\\v2.avi";
     VideoCapture capture(path);
+
+    CascadeClassifier cascade;
+    if (!cascade.load("C:\\opencv\\data\\haarcascades\\haarcascade_frontalface_alt.xml"))
+    {
+        cout << "Cascade loading error!" << endl;
+        return 0;
+    }
 
     if (capture.isOpened())
     {
@@ -60,15 +67,9 @@ int main()
             
             time_t T1 = clock();
 
-            Mat frame;
-            resize(source_frame, frame, Size(), 0.3, 0.3);
+            Mat frame = source_frame.clone();
+            //resize(source_frame, frame, Size(), 0.3, 0.3);
 
-            CascadeClassifier cascade;
-            if (!cascade.load("C:\\opencv\\data\\haarcascades\\haarcascade_frontalface_alt.xml"))
-            {
-                cout << "Cascade loading error!" << endl;
-                break;
-            }
 
             vector<Rect> faces;
             cascade.detectMultiScale(frame, faces, 1.18);
@@ -88,6 +89,7 @@ int main()
             char c = waitKey(1);
             if (c == 27)
                 break;
+            capture.grab();
         }
     }
     
